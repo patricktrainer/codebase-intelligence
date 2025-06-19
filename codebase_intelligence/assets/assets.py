@@ -5,12 +5,14 @@ Orchestrates Claude Code instances to maintain living documentation of codebases
 """
 
 import json
+import re
 import subprocess
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
 import os
 from pathlib import Path
 
+import dagster
 from dagster import (
     asset, 
     AssetExecutionContext, 
@@ -35,6 +37,9 @@ from dagster import (
 )
 import git
 from pydantic import BaseModel
+
+from codebase_intelligence.claude_integration import ClaudeCodeClient, ClaudeCodeResult, LOGGER
+
 
 
 # Utility Functions for JSON Serialization
@@ -105,6 +110,16 @@ class CodeQualityIssue(BaseModel):
     description: str
     suggested_fix: Optional[str] = None
 
+# Utility to write documentation updates to file
+def write_documentation_file(doc_update: DocumentationUpdate):
+    """Writes the documentation update to the specified file."""
+    os.makedirs(os.path.dirname(doc_update.file_path), exist_ok=True)
+    mode = "a" if doc_update.update_type == "update" else "w"
+    with open(doc_update.file_path, mode, encoding="utf-8") as f:
+        f.write(f"\n# Update Reason: {doc_update.reason}\n")
+        f.write(doc_update.content)
+        f.write("\n")
+
 
 class KnowledgeGraphNode(BaseModel):
     """Represents a node in the codebase knowledge graph."""
@@ -126,59 +141,21 @@ def execute_claude_code(prompt: str, context: Dict[str, Any], config: ClaudeCode
     # In reality, this would be something like:
     # response = claude_code_client.execute(prompt=prompt, context=context)
     
-    # For now, return a mock response based on the prompt
-    if "analyze commits" in prompt.lower():
-        return json.dumps({
-            "changes": [
-                {
-                    "file": "src/api/handlers.py",
-                    "type": "refactor",
-                    "description": "Extracted authentication logic into middleware"
-                },
-                {
-                    "file": "src/models/user.py",
-                    "type": "feature",
-                    "description": "Added role-based permissions"
-                }
-            ]
-        })
-    elif "assess impact" in prompt.lower():
-        return json.dumps({
-            "architectural_changes": ["New middleware layer introduced"],
-            "breaking_changes": ["API authentication endpoints moved"],
-            "risk_level": "medium"
-        })
-    elif "update documentation" in prompt.lower():
-        return json.dumps({
-            "updates": [
-                {
-                    "file": "docs/api.md",
-                    "content": "## Authentication\n\nAuthentication is now handled via middleware..."
-                }
-            ]
-        })
-    elif "audit code quality" in prompt.lower():
-        return json.dumps({
-            "issues": [
-                {
-                    "severity": "medium",
-                    "category": "tech_debt",
-                    "description": "Duplicate authentication logic in multiple handlers"
-                }
-            ]
-        })
-    elif "build knowledge graph" in prompt.lower():
-        return json.dumps({
-            "nodes": [
-                {
-                    "id": "auth_middleware",
-                    "type": "module",
-                    "dependencies": ["user_model", "jwt_utils"]
-                }
-            ]
-        })
-    
-    return json.dumps({"status": "completed"})
+    claude_code_client = ClaudeCodeClient(
+        api_key=config.api_key,
+        timeout=config.timeout_seconds
+    )
+
+    LOGGER.info(f"Executing Claude Code with prompt: {prompt[:100]}...")  # Log first 100 chars for brevity
+
+    result: ClaudeCodeResult = claude_code_client.execute(prompt, context)
+    LOGGER.info(f"Claude Code execution completed with status: {result.success}")
+
+    if not result.success:
+        raise RuntimeError(f"Claude Code execution failed: {result.output}")
+    LOGGER.info(f"Claude Code output: {result.output}")
+    return result.output
+
 
 
 def get_git_commits(repo_path: str, since: datetime, branch: str = "main") -> List[CodeChange]:
@@ -243,7 +220,7 @@ def code_changes(
     # Get commits from the last N days
     since = datetime.now() - timedelta(days=config.lookback_days)
     commits = get_git_commits(config.repo_path, since, config.branch)
-    
+
     context.log.info(f"Found {len(commits)} commits since {since}")
     
     # Analyze each commit with Claude Code
@@ -295,9 +272,13 @@ def code_changes(
         # Convert datetime to ISO string for JSON serialization
         if 'timestamp' in analyzed_change and isinstance(analyzed_change['timestamp'], datetime):
             analyzed_change['timestamp'] = analyzed_change['timestamp'].isoformat()
-        analyzed_change["analysis"] = json.loads(analysis)
+        claude_analysis_output = json.loads(analysis)
+        # analyzed_change["analysis"] = claude_analysis_output[-1] # the result from Claude Code is expected to be a list with the last item being the analysis
+        analyzed_change["analysis"] = claude_analysis_output # the result from Claude Code is expected to be a list with the last item being the analysis
         analyzed_changes.append(analyzed_change)
-    
+        # pretty print the analyzed changes
+        LOGGER.info(safe_json_dumps(analyzed_changes, indent=2))
+
     return Output(
         value=analyzed_changes,
         metadata={
@@ -418,7 +399,7 @@ def documentation_updates(
         updates.append(doc_update.dict())
         
         # In production, actually write the documentation files
-        # write_documentation_file(doc_update)
+        write_documentation_file(doc_update)
     
     return Output(
         value=updates,
