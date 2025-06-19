@@ -425,7 +425,80 @@ def code_quality_audit(
     # Get list of all source files
     repo_path = Path(config.repo_path)
     source_files = list(repo_path.rglob("*.py")) + list(repo_path.rglob("*.js"))
+
+    # respect .gitignore files
+    gitignore_path = repo_path / ".gitignore"
     
+    def gitignore_to_regex(pattern):
+        """Convert gitignore pattern to regex pattern."""
+        # Skip empty patterns
+        if not pattern:
+            return None
+            
+        # Escape special regex characters except for gitignore wildcards
+        escaped = re.escape(pattern)
+        
+        # Convert gitignore patterns to regex
+        # ** means match any number of directories
+        escaped = escaped.replace(r'\*\*', '.*')
+        # * means match any characters except /
+        escaped = escaped.replace(r'\*', '[^/]*')
+        # ? means match any single character except /
+        escaped = escaped.replace(r'\?', '[^/]')
+        
+        # If pattern doesn't start with /, it can match anywhere in the path
+        if not pattern.startswith('/'):
+            escaped = '.*' + escaped
+            
+        # If pattern ends with /, it only matches directories
+        if pattern.endswith('/'):
+            escaped = escaped + '.*'
+            
+        return escaped
+    
+    if gitignore_path.exists():
+        with open(gitignore_path, "r") as f:
+            gitignore_lines = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+        
+        # Convert gitignore patterns to regex patterns
+        gitignore_patterns = []
+        for line in gitignore_lines:
+            try:
+                regex_pattern = gitignore_to_regex(line)
+                if regex_pattern:
+                    # Test if the regex is valid
+                    re.compile(regex_pattern)
+                    gitignore_patterns.append(regex_pattern)
+            except re.error as e:
+                context.log.warning(f"Invalid gitignore pattern '{line}': {e}")
+                continue
+        
+        # Filter source files using gitignore patterns
+        filtered_files = []
+        for file_path in source_files:
+            file_str = str(file_path.relative_to(repo_path))
+            should_ignore = False
+            
+            for pattern in gitignore_patterns:
+                try:
+                    if re.search(pattern, file_str):
+                        should_ignore = True
+                        break
+                except re.error as e:
+                    context.log.warning(f"Error matching pattern '{pattern}' against '{file_str}': {e}")
+                    continue
+            
+            if not should_ignore:
+                filtered_files.append(file_path)
+        
+        source_files = filtered_files
+        
+    if not source_files:
+        context.log.warning("No source files found for code quality audit. Check your repository path and file patterns.")
+        return Output(value=[], metadata={"message": "No source files found."})
+    context.log.info(f"Found {len(source_files)} source files for audit in {config.repo_path}")
+
+
     prompt = f"""
     Perform a comprehensive code quality audit for this codebase:
     
