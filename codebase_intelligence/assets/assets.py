@@ -593,7 +593,7 @@ def codebase_knowledge_graph(
 
 # Sensors and Schedules
 @sensor(
-    job_name="materialize_on_commit",
+    job_name="continuous_analysis",
     default_status=DefaultSensorStatus.RUNNING,
     description="Triggers analysis when new commits are detected"
 )
@@ -642,6 +642,7 @@ defs = Definitions(
         documentation_updates,
         code_quality_audit,
         codebase_knowledge_graph
-    ]
-    # Removed sensors and schedules for now as they reference non-existent jobs
+    ],
+    sensors=[commit_sensor],
+    schedules=[quality_audit_schedule],
 )

@@ -1,5 +1,24 @@
-from codebase_intelligence.assets.assets import defs
+# codebase_intelligence/__init__.py
+"""
+Codebase Intelligence System - A Dagster-based orchestration system for
+automated code analysis and documentation using Claude Code.
+"""
 
 from dagster import Definitions
 
-defs = Definitions(assets=defs.assets)
+from codebase_intelligence.jobs.jobs import continuous_analysis_job, quality_audit_job, full_analysis_job
+from codebase_intelligence.assets.assets import defs 
+
+
+defs = Definitions(
+    assets=defs.assets,
+    jobs=[
+        continuous_analysis_job,
+        quality_audit_job,
+        full_analysis_job
+    ],
+    resources=defs.resources,
+    schedules=defs.schedules,
+    sensors=defs.sensors
+)
+ 
