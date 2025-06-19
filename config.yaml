@@ -1,0 +1,18 @@
+claude_code:
+  timeout: 300
+  max_retries: 3
+
+repository:
+  path: "."
+  branch: "main"
+  lookback_days: 7
+
+storage:
+  docs_root: "./docs"
+  graph_store: "./data/knowledge_graph"
+  metrics_store: "./data/metrics"
+
+notifications:
+  email_config:
+    smtp_host: "smtp.gmail.com"
+    smtp_port: 587
