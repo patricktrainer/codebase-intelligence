@@ -11,6 +11,7 @@ import hashlib
 from datetime import datetime
 import yaml
 import git
+import re
 
 
 class DocumentationManager:
@@ -128,6 +129,56 @@ class CodebaseAnalyzer:
         self.repo_path = Path(repo_path)
         self.repo = git.Repo(repo_path)
     
+    def _gitignore_to_regex(self, pattern: str) -> Optional[str]:
+        """Convert gitignore pattern to regex pattern."""
+        if not pattern:
+            return None
+        escaped = re.escape(pattern)
+        escaped = escaped.replace(r'\*\*', '.*')
+        escaped = escaped.replace(r'\*', '[^/]*')
+        escaped = escaped.replace(r'\?', '[^/]')
+        if not pattern.startswith('/'):
+            escaped = '.*' + escaped
+        if pattern.endswith('/'):
+            escaped = escaped + '.*'
+        return escaped
+
+    def get_source_files(self) -> List[Path]:
+        """Get all source files in the repository, respecting .gitignore."""
+        source_files = list(self.repo_path.rglob("*.py")) + list(self.repo_path.rglob("*.js"))
+        
+        gitignore_path = self.repo_path / ".gitignore"
+        if gitignore_path.exists():
+            with open(gitignore_path, "r") as f:
+                gitignore_lines = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+            
+            gitignore_patterns = []
+            for line in gitignore_lines:
+                try:
+                    regex_pattern = self._gitignore_to_regex(line)
+                    if regex_pattern:
+                        re.compile(regex_pattern)
+                        gitignore_patterns.append(regex_pattern)
+                except re.error:
+                    continue
+            
+            filtered_files = []
+            for file_path in source_files:
+                file_str = str(file_path.relative_to(self.repo_path))
+                should_ignore = False
+                for pattern in gitignore_patterns:
+                    try:
+                        if re.search(pattern, file_str):
+                            should_ignore = True
+                            break
+                    except re.error:
+                        continue
+                if not should_ignore:
+                    filtered_files.append(file_path)
+            source_files = filtered_files
+            
+        return source_files
+
     def get_file_metrics(self, file_path: Path) -> Dict[str, Any]:
         """Get metrics for a specific file."""
         if not file_path.exists():

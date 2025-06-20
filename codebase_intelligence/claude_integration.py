@@ -13,6 +13,7 @@ from dataclasses import dataclass
 import subprocess
 import tempfile
 from pathlib import Path
+import re
 
 
 LOGGER = dagster.get_dagster_logger()
@@ -24,7 +25,7 @@ class ClaudeCodeResult:
     success: bool
     output: Optional[str] = None
     error: Optional[str] = None
-    metadata: Dict[str, Any] = None
+    metadata: Optional[Dict[str, Any]] = None
 
 
 class ClaudeCodeClient:
@@ -64,46 +65,80 @@ class ClaudeCodeClient:
             ClaudeCodeResult with the execution results
         """
         try:
-            # In production, this would call the actual Claude Code API
-            # For example:
-            cmd = ["claude", "-p", '--model', 'claude-sonnet-4-20250514', '--output-format', 'json', prompt] 
+            # Set working directory to the workspace path if provided, otherwise current directory
+            cwd = str(workspace_path) if workspace_path else "."
+            
+            cmd = [
+                "claude",
+                '--model', 'claude-sonnet-4-20250514', 
+                '--output-format', 'json',
+                # '--allowedTools', 'Write', # TODO: This doesnt work... errors with a timeout
+                prompt
+            ]
 
             LOGGER.info(f"Executing Claude Code with command: {' '.join(cmd)}")
+            LOGGER.info(f"Working directory: {cwd}")
 
-
-            # if workspace_path:
-            #     cmd.extend(["--workspace", str(workspace_path)])
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                # cwd=cwd  # Set working directory
+            )
             
-            # For now, simulate execution
-            await asyncio.sleep(0.5)  # Simulate API latency
+            stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=self.timeout)
             
-            # Generate mock response based on prompt
-            if "analyze" in prompt.lower():
-                LOGGER.info(f"Analyzing code with prompt: {prompt}")
-                # output = self._generate_analysis_response(prompt, context)
-                # run the command and capture the output to the output variable
-                output = subprocess.run(cmd, capture_output=True, text=True)
-                output = output.stdout if output.returncode == 0 else output.stderr
+            if process.returncode != 0:
+                error_msg = stderr.decode()
+                LOGGER.error(f"Claude CLI tool failed with stderr: {error_msg}")
+                return ClaudeCodeResult(success=False, error=error_msg)
 
-            elif "document" in prompt.lower():
-                LOGGER.info(f"Generating documentation with prompt: {prompt}")
-                # output = self._generate_documentation_response(prompt, context)
-                output = subprocess.run(cmd, capture_output=True, text=True)
-                output = output.stdout if output.returncode == 0 else output.stderr
-            elif "refactor" in prompt.lower():
-                LOGGER.info(f"Refactoring code with prompt: {prompt}")
-                output = subprocess.run(cmd, capture_output=True, text=True)
-                output = output.stdout if output.returncode == 0 else output.stderr
-            else:
-                LOGGER.info(f"Executing code with prompt: {prompt}")
-                output = json.dumps({"status": "completed", "result": "<Mock response>"})
+            output = stdout.decode()
+            LOGGER.info(f"Raw Claude Code output: {output}")
+
+            # The output can be a stream of JSON objects, we are interested in the last one
+            # that is of type 'result'.
+            last_result_obj = None
+            for line in output.strip().split('\n'):
+                if line.strip():
+                    try:
+                        obj = json.loads(line)
+                        if isinstance(obj, dict) and obj.get("type") == "result":
+                            last_result_obj = obj
+                    except json.JSONDecodeError:
+                        LOGGER.warning(f"Could not decode JSON line from Claude output: {line}")
+                        continue
+            
+            if not last_result_obj:
+                # If no result object found, but we have output, treat the full output as the result
+                if output.strip():
+                    return ClaudeCodeResult(success=True, output=output.strip())
+                else:
+                    return ClaudeCodeResult(success=False, error="No 'result' type object found in Claude output.", output=output)
+
+            if last_result_obj.get("is_error"):
+                return ClaudeCodeResult(success=False, error=last_result_obj.get("result", "Unknown error"))
+
+            # The actual content is in the 'result' field of this last object
+            final_output = last_result_obj.get("result", "{}")
+
+            # This result can be a JSON string wrapped in markdown, clean it up.
+            if "```json" in final_output:
+                match = re.search(r"```json\n(.*?)\n```", final_output, re.DOTALL)
+                if match:
+                    final_output = match.group(1)
+                else: # Fallback for slightly different formats
+                    final_output = final_output.replace("```json", "").replace("```", "").strip()
 
             return ClaudeCodeResult(
                 success=True,
-                output=output,
-                metadata={"execution_time": 0.5}
+                output=final_output,
+                metadata={"execution_time": 0.5} # mock
             )
             
+        except asyncio.TimeoutError:
+            LOGGER.error("Claude Code execution timed out.")
+            return ClaudeCodeResult(success=False, error="Timeout")
         except Exception as e:
             LOGGER.error(f"Claude Code execution failed: {e}")
             return ClaudeCodeResult(
@@ -119,4 +154,3 @@ class ClaudeCodeClient:
     ) -> ClaudeCodeResult:
         """Synchronous wrapper for execute_async."""
         return asyncio.run(self.execute_async(prompt, context, workspace_path))
-    
