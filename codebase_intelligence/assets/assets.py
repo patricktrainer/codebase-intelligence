@@ -38,9 +38,11 @@ from dagster import (
 import git
 from pydantic import BaseModel
 
-from codebase_intelligence.claude_integration import ClaudeCodeClient, ClaudeCodeResult, LOGGER
+from codebase_intelligence.claude_integration import ClaudeCodeClient, ClaudeCodeResult
+from codebase_intelligence.logging_config import get_logger
 from codebase_intelligence.utils.utils import DocumentationManager, CodebaseAnalyzer, KnowledgeGraphStore
 
+LOGGER = get_logger(__name__)
 
 
 # Utility Functions for JSON Serialization
@@ -341,8 +343,14 @@ def impact_assessment(
     
     # Parse the Claude output to extract the actual impact analysis data
     try:
-        # Try to parse as JSON first
-        parsed_output = json.loads(analysis_output)
+        # analysis_output is already parsed JSON from Claude integration
+        # Try to extract the structured data from the response
+        if isinstance(analysis_output, str):
+            # Try to parse as JSON first
+            parsed_output = json.loads(analysis_output)
+        else:
+            parsed_output = analysis_output
+            
         LOGGER.info(f"Parsed output type: {type(parsed_output)}, content: {parsed_output}")
         
         # If it's a list, take the last item
@@ -353,37 +361,40 @@ def impact_assessment(
             if "architectural_changes" in parsed_output:
                 impact_data = parsed_output
             else:
-                # This might be a Claude response wrapper - create a default response
-                LOGGER.warning(f"Unexpected Claude output structure: {parsed_output}")
-                impact_data = {
-                    "architectural_changes": [],
-                    "breaking_changes": [],
-                    "new_patterns": [],
-                    "performance_implications": [],
-                    "affected_components": [],
-                    "risk_level": "low"
-                }
+                # This might be a Claude response wrapper - try to extract JSON from it
+                if isinstance(parsed_output, str):
+                    # Try to extract JSON from text
+                    import re
+                    json_match = re.search(r'\{.*\}', parsed_output, re.DOTALL)
+                    if json_match:
+                        impact_data = json.loads(json_match.group())
+                    else:
+                        raise ValueError("No JSON found in output")
+                else:
+                    # Create a default response
+                    LOGGER.warning(f"Unexpected Claude output structure: {parsed_output}")
+                    impact_data = {
+                        "architectural_changes": [],
+                        "breaking_changes": [],
+                        "new_patterns": [],
+                        "performance_implications": [],
+                        "affected_components": [],
+                        "risk_level": "low"
+                    }
         else:
             raise ValueError("Unexpected output format from Claude")
             
-    except json.JSONDecodeError:
-        # If JSON parsing fails, the output might be plain text
-        # Try to extract JSON from the text
-        import re
-        json_match = re.search(r'\{.*\}', analysis_output, re.DOTALL)
-        if json_match:
-            impact_data = json.loads(json_match.group())
-        else:
-            LOGGER.warning(f"Could not parse Claude output as JSON, using default: {analysis_output}")
-            # Provide a default impact analysis
-            impact_data = {
-                "architectural_changes": [],
-                "breaking_changes": [],
-                "new_patterns": [],
-                "performance_implications": [],
-                "affected_components": [],
-                "risk_level": "low"
-            }
+    except (json.JSONDecodeError, ValueError, TypeError) as e:
+        LOGGER.warning(f"Could not parse Claude output: {e}, using default. Raw output: {analysis_output}")
+        # Provide a default impact analysis
+        impact_data = {
+            "architectural_changes": [],
+            "breaking_changes": [],
+            "new_patterns": [],
+            "performance_implications": [],
+            "affected_components": [],
+            "risk_level": "low"
+        }
     
     # Validate with Pydantic model
     validated_impact = ImpactAnalysis(**impact_data)
@@ -603,7 +614,6 @@ def codebase_knowledge_graph(
     - Highly coupled components
     - Central points of failure
     
-    After creating the files, provide a brief summary of the knowledge graph structure.
     """
     
     graph_result = execute_claude_code(prompt, {
@@ -651,8 +661,9 @@ def codebase_knowledge_graph(
         metadata={
             "num_nodes": len(knowledge_graph["nodes"]),
             "num_edges": len(knowledge_graph["edges"]),
-            "created_files": len(knowledge_graph["metadata"].get("created_files", [])),
-            "analysis_summary": knowledge_graph["metadata"].get("analysis_summary", "")[:100]
+            "total_files_analyzed": knowledge_graph["metadata"].get("total_files_analyzed", 0),
+            "total_loc": knowledge_graph["metadata"].get("total_lines_of_code", 0),
+            "analysis_method": knowledge_graph["metadata"].get("analysis_method", "unknown")
         }
     )
 

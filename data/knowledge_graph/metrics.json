@@ -1,0 +1,314 @@
+{
+  "codebase_metrics": {
+    "total_lines_of_code": 1562,
+    "total_files": 10,
+    "total_modules": 6,
+    "total_classes": 13,
+    "total_functions": 30,
+    "total_assets": 5,
+    "total_jobs": 3,
+    "total_sensors": 1,
+    "total_schedules": 1,
+    "average_lines_per_file": 156.2,
+    "average_methods_per_class": 2.8
+  },
+  "complexity_metrics": {
+    "module_complexity": {
+      "assets_module": {
+        "lines_of_code": 726,
+        "cyclomatic_complexity": "high",
+        "number_of_classes": 7,
+        "number_of_functions": 8,
+        "dependencies": 6,
+        "maintainability_index": "medium"
+      },
+      "utils_module": {
+        "lines_of_code": 328,
+        "cyclomatic_complexity": "medium",
+        "number_of_classes": 3,
+        "number_of_functions": 14,
+        "dependencies": 4,
+        "maintainability_index": "good"
+      },
+      "claude_integration": {
+        "lines_of_code": 178,
+        "cyclomatic_complexity": "medium",
+        "number_of_classes": 2,
+        "number_of_functions": 3,
+        "dependencies": 4,
+        "maintainability_index": "good"
+      },
+      "logging_config": {
+        "lines_of_code": 128,
+        "cyclomatic_complexity": "low",
+        "number_of_classes": 1,
+        "number_of_functions": 3,
+        "dependencies": 3,
+        "maintainability_index": "excellent"
+      },
+      "config_module": {
+        "lines_of_code": 75,
+        "cyclomatic_complexity": "low",
+        "number_of_classes": 1,
+        "number_of_functions": 2,
+        "dependencies": 3,
+        "maintainability_index": "excellent"
+      },
+      "jobs_module": {
+        "lines_of_code": 45,
+        "cyclomatic_complexity": "very_low",
+        "number_of_classes": 0,
+        "number_of_functions": 0,
+        "dependencies": 1,
+        "maintainability_index": "excellent"
+      }
+    },
+    "class_complexity": {
+      "ClaudeCodeClient": {
+        "lines_of_code": 145,
+        "methods": 4,
+        "complexity": "high",
+        "responsibility": "single",
+        "coupling": "medium"
+      },
+      "CodebaseAnalyzer": {
+        "lines_of_code": 158,
+        "methods": 6,
+        "complexity": "high",
+        "responsibility": "single",
+        "coupling": "low"
+      },
+      "KnowledgeGraphStore": {
+        "lines_of_code": 84,
+        "methods": 5,
+        "complexity": "medium",
+        "responsibility": "single",
+        "coupling": "low"
+      },
+      "LoggingManager": {
+        "lines_of_code": 84,
+        "methods": 6,
+        "complexity": "medium",
+        "responsibility": "single",
+        "coupling": "medium",
+        "pattern": "singleton"
+      },
+      "DocumentationManager": {
+        "lines_of_code": 65,
+        "methods": 3,
+        "complexity": "medium",
+        "responsibility": "single",
+        "coupling": "low"
+      },
+      "SystemConfig": {
+        "lines_of_code": 63,
+        "methods": 3,
+        "complexity": "low",
+        "responsibility": "single",
+        "coupling": "low"
+      }
+    }
+  },
+  "dependency_metrics": {
+    "total_internal_dependencies": 24,
+    "total_external_dependencies": 8,
+    "circular_dependencies": 0,
+    "dependency_depth": 3,
+    "most_dependent_modules": [
+      "assets_module",
+      "claude_integration",
+      "utils_module"
+    ],
+    "least_dependent_modules": [
+      "jobs_module",
+      "config_module"
+    ],
+    "external_dependencies": [
+      "dagster",
+      "git",
+      "pydantic", 
+      "asyncio",
+      "subprocess",
+      "pathlib",
+      "yaml",
+      "logging"
+    ]
+  },
+  "coupling_metrics": {
+    "high_coupling_pairs": [
+      {
+        "source": "assets_module",
+        "target": "claude_integration",
+        "strength": "strong",
+        "type": "functional"
+      },
+      {
+        "source": "assets_module",
+        "target": "utils_module",
+        "strength": "strong",
+        "type": "functional"
+      },
+      {
+        "source": "codebase_intelligence",
+        "target": "assets_module",
+        "strength": "strong",
+        "type": "structural"
+      }
+    ],
+    "loose_coupling_areas": [
+      {
+        "module": "jobs_module",
+        "coupling_score": "low",
+        "reason": "Simple job definitions with minimal dependencies"
+      },
+      {
+        "module": "config_module",
+        "coupling_score": "low",
+        "reason": "Configuration class with minimal external coupling"
+      }
+    ],
+    "average_coupling_score": "medium"
+  },
+  "cohesion_metrics": {
+    "module_cohesion": {
+      "assets_module": {
+        "cohesion": "high",
+        "reason": "All components work together for Dagster asset orchestration"
+      },
+      "claude_integration": {
+        "cohesion": "high", 
+        "reason": "Focused on Claude Code API interaction"
+      },
+      "utils_module": {
+        "cohesion": "medium",
+        "reason": "Contains related utility classes but multiple responsibilities"
+      },
+      "logging_config": {
+        "cohesion": "high",
+        "reason": "Focused solely on logging configuration"
+      },
+      "config_module": {
+        "cohesion": "high",
+        "reason": "Focused solely on system configuration"
+      },
+      "jobs_module": {
+        "cohesion": "high",
+        "reason": "Focused solely on job definitions"
+      }
+    }
+  },
+  "quality_metrics": {
+    "code_duplication": {
+      "level": "low",
+      "potential_duplicates": [
+        {
+          "pattern": "error_handling",
+          "locations": ["claude_integration", "assets_module"],
+          "severity": "minor"
+        }
+      ]
+    },
+    "test_coverage": {
+      "estimated_coverage": "unknown",
+      "test_files_found": 1,
+      "test_files": ["test_setup.py"]
+    },
+    "documentation_coverage": {
+      "docstring_coverage": "good",
+      "modules_documented": 6,
+      "classes_documented": 13,
+      "functions_documented": 25
+    },
+    "security_metrics": {
+      "potential_security_issues": [
+        {
+          "type": "subprocess_usage",
+          "location": "claude_integration.py:90",
+          "severity": "medium",
+          "description": "Subprocess execution of external commands"
+        },
+        {
+          "type": "file_path_validation",
+          "location": "utils.py:36",
+          "severity": "low",
+          "description": "Path validation present but worth reviewing"
+        }
+      ]
+    },
+    "performance_metrics": {
+      "async_usage": true,
+      "async_locations": ["claude_integration"],
+      "potential_bottlenecks": [
+        {
+          "location": "assets_module",
+          "type": "external_api_calls",
+          "description": "Multiple Claude Code API calls in sequence"
+        },
+        {
+          "location": "utils_module",
+          "type": "file_operations",
+          "description": "File reading operations in get_source_files"
+        }
+      ]
+    }
+  },
+  "architectural_metrics": {
+    "layered_architecture": {
+      "presentation_layer": ["codebase_intelligence"],
+      "business_logic_layer": ["assets_module", "jobs_module"],
+      "data_access_layer": ["utils_module", "claude_integration"],
+      "infrastructure_layer": ["config_module", "logging_config"]
+    },
+    "design_patterns": [
+      {
+        "pattern": "singleton",
+        "implementation": "LoggingManager",
+        "quality": "good"
+      },
+      {
+        "pattern": "facade",
+        "implementation": "ClaudeCodeClient",
+        "quality": "good"
+      },
+      {
+        "pattern": "factory",
+        "implementation": "SystemConfig._load_config",
+        "quality": "good"
+      }
+    ],
+    "solid_principles": {
+      "single_responsibility": "good",
+      "open_closed": "medium",
+      "liskov_substitution": "good",
+      "interface_segregation": "good",
+      "dependency_inversion": "medium"
+    }
+  },
+  "maintainability_score": {
+    "overall_score": "good",
+    "factors": {
+      "code_complexity": "medium",
+      "module_coupling": "medium",
+      "class_cohesion": "high",
+      "documentation": "good",
+      "test_coverage": "unknown",
+      "code_organization": "excellent"
+    },
+    "recommendations": [
+      "Add comprehensive test coverage",
+      "Consider breaking down assets_module for better maintainability",
+      "Add integration tests for Claude Code client",
+      "Implement more robust error handling in async operations"
+    ]
+  },
+  "growth_metrics": {
+    "extensibility": "high",
+    "new_asset_addition_complexity": "low",
+    "new_integration_complexity": "medium",
+    "configuration_flexibility": "high",
+    "scalability_bottlenecks": [
+      "Sequential Claude Code API calls",
+      "File system operations in source file discovery"
+    ]
+  }
+}

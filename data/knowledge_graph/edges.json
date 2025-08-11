@@ -1,0 +1,407 @@
+[
+  {
+    "id": "edge_1",
+    "source": "codebase_intelligence",
+    "target": "assets_module",
+    "relationship_type": "imports",
+    "description": "Main package imports assets definitions",
+    "metadata": {
+      "import_statement": "from codebase_intelligence.assets.assets import defs",
+      "strength": "strong",
+      "coupling_type": "structural"
+    }
+  },
+  {
+    "id": "edge_2", 
+    "source": "codebase_intelligence",
+    "target": "jobs_module",
+    "relationship_type": "imports",
+    "description": "Main package imports job definitions",
+    "metadata": {
+      "import_statement": "from codebase_intelligence.jobs.jobs import continuous_analysis_job, quality_audit_job, full_analysis_job",
+      "strength": "strong",
+      "coupling_type": "structural"
+    }
+  },
+  {
+    "id": "edge_3",
+    "source": "codebase_intelligence",
+    "target": "logging_config",
+    "relationship_type": "imports",
+    "description": "Main package imports logging setup",
+    "metadata": {
+      "import_statement": "from codebase_intelligence.logging_config import setup_logging",
+      "strength": "strong",
+      "coupling_type": "initialization"
+    }
+  },
+  {
+    "id": "edge_4",
+    "source": "assets_module",
+    "target": "claude_integration",
+    "relationship_type": "imports",
+    "description": "Assets module uses Claude integration for API calls",
+    "metadata": {
+      "import_statement": "from codebase_intelligence.claude_integration import ClaudeCodeClient, ClaudeCodeResult",
+      "strength": "strong",
+      "coupling_type": "functional"
+    }
+  },
+  {
+    "id": "edge_5",
+    "source": "assets_module",
+    "target": "utils_module",
+    "relationship_type": "imports",
+    "description": "Assets module uses utility classes",
+    "metadata": {
+      "import_statement": "from codebase_intelligence.utils.utils import DocumentationManager, CodebaseAnalyzer, KnowledgeGraphStore",
+      "strength": "strong",
+      "coupling_type": "functional"
+    }
+  },
+  {
+    "id": "edge_6",
+    "source": "assets_module",
+    "target": "logging_config",
+    "relationship_type": "imports",
+    "description": "Assets module uses centralized logging",
+    "metadata": {
+      "import_statement": "from codebase_intelligence.logging_config import get_logger",
+      "strength": "medium",
+      "coupling_type": "infrastructure"
+    }
+  },
+  {
+    "id": "edge_7",
+    "source": "claude_integration",
+    "target": "logging_config",
+    "relationship_type": "imports",
+    "description": "Claude integration uses centralized logging",
+    "metadata": {
+      "import_statement": "from .logging_config import get_logger",
+      "strength": "medium",
+      "coupling_type": "infrastructure"
+    }
+  },
+  {
+    "id": "edge_8",
+    "source": "logging_config",
+    "target": "config_module",
+    "relationship_type": "imports",
+    "description": "Logging config uses system configuration",
+    "metadata": {
+      "import_statement": "from .config import SystemConfig",
+      "strength": "strong",
+      "coupling_type": "configuration"
+    }
+  },
+  {
+    "id": "edge_9",
+    "source": "code_changes_asset",
+    "target": "impact_assessment_asset",
+    "relationship_type": "data_flow",
+    "description": "Code changes feed into impact assessment",
+    "metadata": {
+      "asset_dependency": true,
+      "data_type": "List[Dict[str, Any]]",
+      "strength": "strong",
+      "coupling_type": "data"
+    }
+  },
+  {
+    "id": "edge_10",
+    "source": "impact_assessment_asset",
+    "target": "documentation_updates_asset",
+    "relationship_type": "data_flow", 
+    "description": "Impact assessment feeds into documentation updates",
+    "metadata": {
+      "asset_dependency": true,
+      "data_type": "Dict[str, Any]",
+      "strength": "strong",
+      "coupling_type": "data"
+    }
+  },
+  {
+    "id": "edge_11",
+    "source": "code_changes_asset",
+    "target": "codebase_knowledge_graph_asset",
+    "relationship_type": "data_flow",
+    "description": "Code changes feed into knowledge graph updates",
+    "metadata": {
+      "asset_dependency": true,
+      "data_type": "List[Dict[str, Any]]",
+      "strength": "strong",
+      "coupling_type": "data"
+    }
+  },
+  {
+    "id": "edge_12",
+    "source": "impact_assessment_asset",
+    "target": "codebase_knowledge_graph_asset",
+    "relationship_type": "data_flow",
+    "description": "Impact assessment feeds into knowledge graph updates",
+    "metadata": {
+      "asset_dependency": true,
+      "data_type": "Dict[str, Any]",
+      "strength": "strong",
+      "coupling_type": "data"
+    }
+  },
+  {
+    "id": "edge_13",
+    "source": "continuous_analysis_job",
+    "target": "code_changes_asset",
+    "relationship_type": "executes",
+    "description": "Continuous analysis job executes code changes asset",
+    "metadata": {
+      "job_selection": true,
+      "execution_order": 1,
+      "strength": "strong",
+      "coupling_type": "orchestration"
+    }
+  },
+  {
+    "id": "edge_14",
+    "source": "continuous_analysis_job",
+    "target": "impact_assessment_asset",
+    "relationship_type": "executes",
+    "description": "Continuous analysis job executes impact assessment asset",
+    "metadata": {
+      "job_selection": true,
+      "execution_order": 2,
+      "strength": "strong",
+      "coupling_type": "orchestration"
+    }
+  },
+  {
+    "id": "edge_15",
+    "source": "continuous_analysis_job",
+    "target": "documentation_updates_asset",
+    "relationship_type": "executes",
+    "description": "Continuous analysis job executes documentation updates asset",
+    "metadata": {
+      "job_selection": true,
+      "execution_order": 3,
+      "strength": "strong",
+      "coupling_type": "orchestration"
+    }
+  },
+  {
+    "id": "edge_16",
+    "source": "continuous_analysis_job",
+    "target": "codebase_knowledge_graph_asset",
+    "relationship_type": "executes",
+    "description": "Continuous analysis job executes knowledge graph asset",
+    "metadata": {
+      "job_selection": true,
+      "execution_order": 4,
+      "strength": "strong",
+      "coupling_type": "orchestration"
+    }
+  },
+  {
+    "id": "edge_17",
+    "source": "quality_audit_job",
+    "target": "code_quality_audit_asset",
+    "relationship_type": "executes",
+    "description": "Quality audit job executes code quality audit asset",
+    "metadata": {
+      "job_selection": true,
+      "execution_order": 1,
+      "strength": "strong",
+      "coupling_type": "orchestration"
+    }
+  },
+  {
+    "id": "edge_18",
+    "source": "commit_sensor",
+    "target": "continuous_analysis_job",
+    "relationship_type": "triggers",
+    "description": "Commit sensor triggers continuous analysis job",
+    "metadata": {
+      "trigger_type": "file_change",
+      "strength": "strong",
+      "coupling_type": "event"
+    }
+  },
+  {
+    "id": "edge_19",
+    "source": "quality_audit_schedule",
+    "target": "quality_audit_job",
+    "relationship_type": "triggers",
+    "description": "Quality audit schedule triggers quality audit job",
+    "metadata": {
+      "trigger_type": "cron",
+      "schedule": "0 0 * * 0",
+      "strength": "strong",
+      "coupling_type": "temporal"
+    }
+  },
+  {
+    "id": "edge_20",
+    "source": "code_changes_asset",
+    "target": "ClaudeCodeClient",
+    "relationship_type": "uses",
+    "description": "Code changes asset uses Claude client for analysis",
+    "metadata": {
+      "usage_type": "api_call",
+      "method": "execute",
+      "strength": "strong",
+      "coupling_type": "functional"
+    }
+  },
+  {
+    "id": "edge_21",
+    "source": "impact_assessment_asset",
+    "target": "ClaudeCodeClient",
+    "relationship_type": "uses",
+    "description": "Impact assessment uses Claude client for analysis",
+    "metadata": {
+      "usage_type": "api_call",
+      "method": "execute",
+      "strength": "strong",
+      "coupling_type": "functional"
+    }
+  },
+  {
+    "id": "edge_22",
+    "source": "documentation_updates_asset",
+    "target": "ClaudeCodeClient",
+    "relationship_type": "uses",
+    "description": "Documentation updates uses Claude client for generation",
+    "metadata": {
+      "usage_type": "api_call",
+      "method": "execute",
+      "strength": "strong",
+      "coupling_type": "functional"
+    }
+  },
+  {
+    "id": "edge_23",
+    "source": "code_quality_audit_asset",
+    "target": "ClaudeCodeClient",
+    "relationship_type": "uses",
+    "description": "Code quality audit uses Claude client for analysis",
+    "metadata": {
+      "usage_type": "api_call",
+      "method": "execute",
+      "strength": "strong",
+      "coupling_type": "functional"
+    }
+  },
+  {
+    "id": "edge_24",
+    "source": "codebase_knowledge_graph_asset",
+    "target": "ClaudeCodeClient",
+    "relationship_type": "uses",
+    "description": "Knowledge graph asset uses Claude client for analysis",
+    "metadata": {
+      "usage_type": "api_call",
+      "method": "execute",
+      "strength": "strong",
+      "coupling_type": "functional"
+    }
+  },
+  {
+    "id": "edge_25",
+    "source": "documentation_updates_asset",
+    "target": "DocumentationManager",
+    "relationship_type": "uses",
+    "description": "Documentation updates asset uses documentation manager",
+    "metadata": {
+      "usage_type": "instantiation",
+      "methods": ["write_documentation", "generate_index"],
+      "strength": "strong",
+      "coupling_type": "functional"
+    }
+  },
+  {
+    "id": "edge_26",
+    "source": "code_quality_audit_asset",
+    "target": "CodebaseAnalyzer",
+    "relationship_type": "uses",
+    "description": "Quality audit asset uses codebase analyzer",
+    "metadata": {
+      "usage_type": "instantiation",
+      "methods": ["get_source_files"],
+      "strength": "strong",
+      "coupling_type": "functional"
+    }
+  },
+  {
+    "id": "edge_27",
+    "source": "codebase_knowledge_graph_asset",
+    "target": "KnowledgeGraphStore",
+    "relationship_type": "uses",
+    "description": "Knowledge graph asset uses knowledge graph store",
+    "metadata": {
+      "usage_type": "instantiation",
+      "methods": ["save_graph"],
+      "strength": "strong",
+      "coupling_type": "functional"
+    }
+  },
+  {
+    "id": "edge_28",
+    "source": "ClaudeCodeClient",
+    "target": "ClaudeCodeResult",
+    "relationship_type": "creates",
+    "description": "Claude client creates result objects",
+    "metadata": {
+      "creation_type": "return_value",
+      "strength": "strong",
+      "coupling_type": "data"
+    }
+  },
+  {
+    "id": "edge_29",
+    "source": "CodebaseAnalyzer",
+    "target": "DocumentationManager",
+    "relationship_type": "potential_collaboration",
+    "description": "Both handle file operations and could collaborate",
+    "metadata": {
+      "coupling_type": "loose",
+      "strength": "weak",
+      "potential": true
+    }
+  },
+  {
+    "id": "edge_30",
+    "source": "assets_module",
+    "target": "git",
+    "relationship_type": "external_dependency",
+    "description": "Assets module depends on GitPython library",
+    "metadata": {
+      "dependency_type": "external",
+      "library": "GitPython",
+      "strength": "strong",
+      "coupling_type": "external"
+    }
+  },
+  {
+    "id": "edge_31",
+    "source": "assets_module", 
+    "target": "dagster",
+    "relationship_type": "external_dependency",
+    "description": "Assets module depends on Dagster framework",
+    "metadata": {
+      "dependency_type": "external",
+      "library": "dagster",
+      "strength": "strong",
+      "coupling_type": "framework"
+    }
+  },
+  {
+    "id": "edge_32",
+    "source": "assets_module",
+    "target": "pydantic",
+    "relationship_type": "external_dependency",
+    "description": "Assets module uses Pydantic for data models",
+    "metadata": {
+      "dependency_type": "external",
+      "library": "pydantic",
+      "strength": "strong",
+      "coupling_type": "validation"
+    }
+  }
+]

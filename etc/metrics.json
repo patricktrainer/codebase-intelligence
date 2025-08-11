@@ -1,0 +1,273 @@
+{
+  "codebase_overview": {
+    "total_modules": 8,
+    "total_classes": 13,
+    "total_functions": 2,
+    "total_assets": 5,
+    "total_jobs": 3,
+    "total_config_files": 2,
+    "lines_of_code_estimate": 2500,
+    "complexity_distribution": {
+      "low": 6,
+      "medium": 8,
+      "high": 7,
+      "very_high": 2
+    }
+  },
+  "module_metrics": [
+    {
+      "module": "codebase_intelligence.__init__",
+      "complexity": "low",
+      "lines_of_code": 25,
+      "dependencies_count": 3,
+      "classes_count": 0,
+      "functions_count": 0,
+      "coupling_score": 3,
+      "cohesion_score": 8,
+      "maintainability_index": 85
+    },
+    {
+      "module": "codebase_intelligence.config",
+      "complexity": "medium",
+      "lines_of_code": 150,
+      "dependencies_count": 2,
+      "classes_count": 1,
+      "functions_count": 2,
+      "coupling_score": 2,
+      "cohesion_score": 9,
+      "maintainability_index": 78
+    },
+    {
+      "module": "codebase_intelligence.logging_config",
+      "complexity": "medium",
+      "lines_of_code": 120,
+      "dependencies_count": 1,
+      "classes_count": 1,
+      "functions_count": 2,
+      "coupling_score": 4,
+      "cohesion_score": 7,
+      "maintainability_index": 72
+    },
+    {
+      "module": "codebase_intelligence.claude_integration",
+      "complexity": "high",
+      "lines_of_code": 200,
+      "dependencies_count": 3,
+      "classes_count": 2,
+      "functions_count": 0,
+      "coupling_score": 5,
+      "cohesion_score": 8,
+      "maintainability_index": 65
+    },
+    {
+      "module": "codebase_intelligence.assets.assets",
+      "complexity": "very_high",
+      "lines_of_code": 800,
+      "dependencies_count": 8,
+      "classes_count": 5,
+      "functions_count": 5,
+      "coupling_score": 8,
+      "cohesion_score": 6,
+      "maintainability_index": 45
+    },
+    {
+      "module": "codebase_intelligence.jobs.jobs",
+      "complexity": "medium",
+      "lines_of_code": 100,
+      "dependencies_count": 2,
+      "classes_count": 0,
+      "functions_count": 0,
+      "coupling_score": 3,
+      "cohesion_score": 9,
+      "maintainability_index": 80
+    },
+    {
+      "module": "codebase_intelligence.utils.utils",
+      "complexity": "high",
+      "lines_of_code": 350,
+      "dependencies_count": 4,
+      "classes_count": 3,
+      "functions_count": 0,
+      "coupling_score": 6,
+      "cohesion_score": 7,
+      "maintainability_index": 60
+    }
+  ],
+  "dependency_metrics": {
+    "total_dependencies": 43,
+    "import_dependencies": 9,
+    "asset_dependencies": 4,
+    "external_dependencies": 5,
+    "average_coupling_per_module": 4.4,
+    "highest_coupled_module": "codebase_intelligence.assets.assets",
+    "most_depended_upon": "codebase_intelligence.logging_config",
+    "dependency_depth": {
+      "max_depth": 3,
+      "average_depth": 1.8,
+      "circular_dependencies": 0
+    }
+  },
+  "asset_performance_metrics": [
+    {
+      "asset": "code_changes",
+      "complexity": "medium",
+      "estimated_execution_time_seconds": 45,
+      "memory_usage_mb": 50,
+      "cpu_intensity": "low",
+      "io_intensity": "medium",
+      "dependencies_count": 0,
+      "downstream_impact": 4
+    },
+    {
+      "asset": "impact_assessment",
+      "complexity": "high",
+      "estimated_execution_time_seconds": 120,
+      "memory_usage_mb": 100,
+      "cpu_intensity": "high",
+      "io_intensity": "low",
+      "dependencies_count": 1,
+      "downstream_impact": 2
+    },
+    {
+      "asset": "documentation_updates",
+      "complexity": "high",
+      "estimated_execution_time_seconds": 180,
+      "memory_usage_mb": 75,
+      "cpu_intensity": "medium",
+      "io_intensity": "high",
+      "dependencies_count": 1,
+      "downstream_impact": 0
+    },
+    {
+      "asset": "code_quality_audit",
+      "complexity": "high",
+      "estimated_execution_time_seconds": 300,
+      "memory_usage_mb": 150,
+      "cpu_intensity": "high",
+      "io_intensity": "medium",
+      "dependencies_count": 0,
+      "downstream_impact": 0
+    },
+    {
+      "asset": "codebase_knowledge_graph",
+      "complexity": "very_high",
+      "estimated_execution_time_seconds": 240,
+      "memory_usage_mb": 200,
+      "cpu_intensity": "high",
+      "io_intensity": "high",
+      "dependencies_count": 2,
+      "downstream_impact": 0
+    }
+  ],
+  "quality_indicators": {
+    "code_coverage_estimate": 75,
+    "technical_debt_ratio": 15,
+    "duplication_percentage": 5,
+    "documentation_coverage": 85,
+    "test_coverage_estimate": 60,
+    "security_score": 80,
+    "performance_score": 70,
+    "maintainability_score": 65
+  },
+  "architectural_metrics": {
+    "abstraction_level": "high",
+    "modularity_score": 8,
+    "separation_of_concerns": 9,
+    "single_responsibility": 7,
+    "open_closed_principle": 8,
+    "dependency_inversion": 9,
+    "layered_architecture_score": 8,
+    "microservice_readiness": 6
+  },
+  "risk_assessment": {
+    "high_risk_components": [
+      {
+        "component": "codebase_intelligence.claude_integration",
+        "risk_factors": ["external_dependency", "single_point_of_failure"],
+        "risk_level": "high",
+        "mitigation_priority": "high"
+      },
+      {
+        "component": "codebase_intelligence.assets.assets",
+        "risk_factors": ["high_complexity", "high_coupling"],
+        "risk_level": "medium",
+        "mitigation_priority": "medium"
+      }
+    ],
+    "circular_dependency_risk": "low",
+    "breaking_change_risk": "medium",
+    "scalability_risk": "medium",
+    "security_risk": "low"
+  },
+  "performance_bottlenecks": [
+    {
+      "component": "codebase_knowledge_graph",
+      "bottleneck_type": "memory_intensive",
+      "severity": "medium",
+      "impact": "execution_time"
+    },
+    {
+      "component": "code_quality_audit",
+      "bottleneck_type": "cpu_intensive",
+      "severity": "medium",
+      "impact": "resource_usage"
+    },
+    {
+      "component": "impact_assessment",
+      "bottleneck_type": "api_dependent",
+      "severity": "high",
+      "impact": "reliability"
+    }
+  ],
+  "evolution_metrics": {
+    "recent_changes_impact": "low",
+    "change_frequency": "medium",
+    "stability_index": 85,
+    "backwards_compatibility": 95,
+    "api_stability": 90,
+    "configuration_stability": 85
+  },
+  "scalability_metrics": {
+    "horizontal_scalability": "medium",
+    "vertical_scalability": "high",
+    "data_growth_handling": "good",
+    "concurrent_execution": "limited",
+    "resource_efficiency": "medium",
+    "caching_utilization": "low"
+  },
+  "integration_complexity": {
+    "external_integrations": 3,
+    "api_contracts": 2,
+    "data_formats": 4,
+    "protocol_complexity": "medium",
+    "error_handling_maturity": "high",
+    "retry_mechanisms": "implemented"
+  },
+  "recommendations": [
+    {
+      "category": "performance",
+      "priority": "high",
+      "description": "Implement caching for Claude Code API responses to reduce external dependency load"
+    },
+    {
+      "category": "architecture",
+      "priority": "medium",
+      "description": "Consider breaking down assets.py into smaller, more focused modules"
+    },
+    {
+      "category": "reliability",
+      "priority": "high",
+      "description": "Add circuit breaker pattern for Claude Code integration to handle API failures gracefully"
+    },
+    {
+      "category": "scalability",
+      "priority": "medium",
+      "description": "Implement async processing for independent asset executions"
+    },
+    {
+      "category": "maintainability",
+      "priority": "low",
+      "description": "Add comprehensive unit tests for utility classes"
+    }
+  ]
+}

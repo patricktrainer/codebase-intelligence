@@ -1,0 +1,419 @@
+[
+  {
+    "id": "codebase_intelligence",
+    "type": "package",
+    "name": "codebase_intelligence",
+    "file_path": "codebase_intelligence/__init__.py",
+    "description": "Main package for the Dagster-based codebase intelligence system",
+    "dependencies": ["dagster", "logging_config", "jobs", "assets"],
+    "metadata": {
+      "lines_of_code": 28,
+      "is_entry_point": true,
+      "exports": ["defs", "continuous_analysis_job", "quality_audit_job", "full_analysis_job"]
+    }
+  },
+  {
+    "id": "assets_module",
+    "type": "module",
+    "name": "assets",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Dagster assets for orchestrating Claude Code analysis workflows",
+    "dependencies": ["dagster", "git", "pydantic", "claude_integration", "logging_config", "utils"],
+    "metadata": {
+      "lines_of_code": 726,
+      "functions": 8,
+      "classes": 7,
+      "is_core_module": true
+    }
+  },
+  {
+    "id": "claude_integration",
+    "type": "module", 
+    "name": "claude_integration",
+    "file_path": "codebase_intelligence/claude_integration.py",
+    "description": "Client for interfacing with Claude Code API",
+    "dependencies": ["asyncio", "json", "subprocess", "logging_config"],
+    "metadata": {
+      "lines_of_code": 178,
+      "functions": 3,
+      "classes": 2,
+      "is_core_module": true
+    }
+  },
+  {
+    "id": "config_module",
+    "type": "module",
+    "name": "config",
+    "file_path": "codebase_intelligence/config.py",
+    "description": "Configuration management system",
+    "dependencies": ["os", "pathlib", "yaml"],
+    "metadata": {
+      "lines_of_code": 75,
+      "functions": 2,
+      "classes": 1,
+      "is_core_module": true
+    }
+  },
+  {
+    "id": "utils_module",
+    "type": "module",
+    "name": "utils",
+    "file_path": "codebase_intelligence/utils/utils.py", 
+    "description": "Utilities for documentation management and code analysis",
+    "dependencies": ["pathlib", "json", "git", "logging"],
+    "metadata": {
+      "lines_of_code": 328,
+      "functions": 14,
+      "classes": 3,
+      "is_core_module": true
+    }
+  },
+  {
+    "id": "jobs_module",
+    "type": "module",
+    "name": "jobs",
+    "file_path": "codebase_intelligence/jobs/jobs.py",
+    "description": "Job definitions for different analysis workflows",
+    "dependencies": ["dagster"],
+    "metadata": {
+      "lines_of_code": 45,
+      "functions": 0,
+      "classes": 0,
+      "is_core_module": true
+    }
+  },
+  {
+    "id": "logging_config",
+    "type": "module",
+    "name": "logging_config",
+    "file_path": "codebase_intelligence/logging_config.py",
+    "description": "Centralized logging configuration",
+    "dependencies": ["logging", "pathlib", "config"],
+    "metadata": {
+      "lines_of_code": 128,
+      "functions": 3,
+      "classes": 1,
+      "is_core_module": true
+    }
+  },
+  {
+    "id": "ClaudeCodeConfig",
+    "type": "class",
+    "name": "ClaudeCodeConfig",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Configuration for Claude Code execution",
+    "parent_module": "assets_module",
+    "dependencies": ["dagster.Config"],
+    "metadata": {
+      "lines_of_code": 5,
+      "attributes": ["api_key", "max_retries", "timeout_seconds"]
+    }
+  },
+  {
+    "id": "RepositoryConfig",
+    "type": "class",
+    "name": "RepositoryConfig", 
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Configuration for repository analysis",
+    "parent_module": "assets_module",
+    "dependencies": ["dagster.Config"],
+    "metadata": {
+      "lines_of_code": 5,
+      "attributes": ["repo_path", "branch", "lookback_days"]
+    }
+  },
+  {
+    "id": "CodeChange",
+    "type": "class",
+    "name": "CodeChange",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Represents a code change detected in the repository",
+    "parent_module": "assets_module",
+    "dependencies": ["pydantic.BaseModel"],
+    "metadata": {
+      "lines_of_code": 10,
+      "attributes": ["commit_hash", "author", "timestamp", "files_changed", "additions", "deletions", "message", "diff_summary"]
+    }
+  },
+  {
+    "id": "ImpactAnalysis",
+    "type": "class", 
+    "name": "ImpactAnalysis",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Represents the impact analysis of code changes",
+    "parent_module": "assets_module",
+    "dependencies": ["pydantic.BaseModel"],
+    "metadata": {
+      "lines_of_code": 8,
+      "attributes": ["architectural_changes", "breaking_changes", "new_patterns", "performance_implications", "affected_components", "risk_level"]
+    }
+  },
+  {
+    "id": "DocumentationUpdate",
+    "type": "class",
+    "name": "DocumentationUpdate",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Represents documentation updates needed",
+    "parent_module": "assets_module",
+    "dependencies": ["pydantic.BaseModel"],
+    "metadata": {
+      "lines_of_code": 6,
+      "attributes": ["file_path", "update_type", "content", "reason"]
+    }
+  },
+  {
+    "id": "CodeQualityIssue",
+    "type": "class",
+    "name": "CodeQualityIssue",
+    "file_path": "codebase_intelligence/assets/assets.py", 
+    "description": "Represents a code quality issue found",
+    "parent_module": "assets_module",
+    "dependencies": ["pydantic.BaseModel"],
+    "metadata": {
+      "lines_of_code": 8,
+      "attributes": ["severity", "category", "file_path", "line_range", "description", "suggested_fix"]
+    }
+  },
+  {
+    "id": "KnowledgeGraphNode",
+    "type": "class",
+    "name": "KnowledgeGraphNode",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Represents a node in the codebase knowledge graph",
+    "parent_module": "assets_module",
+    "dependencies": ["pydantic.BaseModel"],
+    "metadata": {
+      "lines_of_code": 8,
+      "attributes": ["id", "type", "name", "dependencies", "dependents", "metadata"]
+    }
+  },
+  {
+    "id": "ClaudeCodeResult",
+    "type": "class",
+    "name": "ClaudeCodeResult",
+    "file_path": "codebase_intelligence/claude_integration.py",
+    "description": "Result from Claude Code execution",
+    "parent_module": "claude_integration",
+    "dependencies": ["dataclasses.dataclass"],
+    "metadata": {
+      "lines_of_code": 8,
+      "attributes": ["success", "output", "error", "metadata"]
+    }
+  },
+  {
+    "id": "ClaudeCodeClient",
+    "type": "class",
+    "name": "ClaudeCodeClient",
+    "file_path": "codebase_intelligence/claude_integration.py",
+    "description": "Client for interacting with Claude Code API",
+    "parent_module": "claude_integration",
+    "dependencies": ["asyncio", "subprocess"],
+    "metadata": {
+      "lines_of_code": 145,
+      "methods": ["__init__", "_validate_setup", "execute_async", "execute"],
+      "is_async": true
+    }
+  },
+  {
+    "id": "SystemConfig",
+    "type": "class",
+    "name": "SystemConfig",
+    "file_path": "codebase_intelligence/config.py",
+    "description": "System-wide configuration management",
+    "parent_module": "config_module",
+    "dependencies": ["pathlib", "yaml"],
+    "metadata": {
+      "lines_of_code": 63,
+      "methods": ["__init__", "_load_config", "get"]
+    }
+  },
+  {
+    "id": "DocumentationManager",
+    "type": "class",
+    "name": "DocumentationManager",
+    "file_path": "codebase_intelligence/utils/utils.py",
+    "description": "Manages documentation generation and updates",
+    "parent_module": "utils_module",
+    "dependencies": ["pathlib", "logging"],
+    "metadata": {
+      "lines_of_code": 65,
+      "methods": ["__init__", "write_documentation", "generate_index"]
+    }
+  },
+  {
+    "id": "KnowledgeGraphStore",
+    "type": "class",
+    "name": "KnowledgeGraphStore",
+    "file_path": "codebase_intelligence/utils/utils.py",
+    "description": "Stores and manages the codebase knowledge graph",
+    "parent_module": "utils_module",
+    "dependencies": ["pathlib", "json", "logging"],
+    "metadata": {
+      "lines_of_code": 84,
+      "methods": ["__init__", "save_graph", "load_graph", "get_graph_diff", "_get_next_version"]
+    }
+  },
+  {
+    "id": "CodebaseAnalyzer",
+    "type": "class",
+    "name": "CodebaseAnalyzer",
+    "file_path": "codebase_intelligence/utils/utils.py",
+    "description": "Analyzes codebase structure and metrics",
+    "parent_module": "utils_module",
+    "dependencies": ["pathlib", "git", "logging"],
+    "metadata": {
+      "lines_of_code": 158,
+      "methods": ["__init__", "_gitignore_to_regex", "get_source_files", "get_file_metrics", "_count_comment_lines", "find_dependencies"]
+    }
+  },
+  {
+    "id": "LoggingManager",
+    "type": "class",
+    "name": "LoggingManager",
+    "file_path": "codebase_intelligence/logging_config.py",
+    "description": "Manages centralized logging configuration (Singleton)",
+    "parent_module": "logging_config",
+    "dependencies": ["logging", "pathlib", "config"],
+    "metadata": {
+      "lines_of_code": 84,
+      "methods": ["__new__", "__init__", "_setup_logging", "_configure_module_loggers", "get_logger", "set_level"],
+      "is_singleton": true
+    }
+  },
+  {
+    "id": "code_changes_asset",
+    "type": "asset",
+    "name": "code_changes",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Detects and analyzes recent code changes in the repository",
+    "parent_module": "assets_module",
+    "dependencies": ["git", "claude_integration"],
+    "metadata": {
+      "lines_of_code": 95,
+      "compute_kind": "claude_code",
+      "output_type": "List[Dict[str, Any]]"
+    }
+  },
+  {
+    "id": "impact_assessment_asset",
+    "type": "asset",
+    "name": "impact_assessment",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Assesses the impact of code changes on the system",
+    "parent_module": "assets_module",
+    "dependencies": ["code_changes_asset", "claude_integration"],
+    "metadata": {
+      "lines_of_code": 107,
+      "compute_kind": "claude_code",
+      "output_type": "Dict[str, Any]"
+    }
+  },
+  {
+    "id": "documentation_updates_asset",
+    "type": "asset",
+    "name": "documentation_updates",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Generates documentation updates based on code changes",
+    "parent_module": "assets_module",
+    "dependencies": ["impact_assessment_asset", "DocumentationManager"],
+    "metadata": {
+      "lines_of_code": 77,
+      "compute_kind": "claude_code",
+      "output_type": "List[Dict[str, Any]]"
+    }
+  },
+  {
+    "id": "code_quality_audit_asset",
+    "type": "asset",
+    "name": "code_quality_audit",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Performs scheduled code quality audit",
+    "parent_module": "assets_module",
+    "dependencies": ["CodebaseAnalyzer", "claude_integration"],
+    "metadata": {
+      "lines_of_code": 82,
+      "compute_kind": "claude_code",
+      "output_type": "List[Dict[str, Any]]",
+      "partitioned": true
+    }
+  },
+  {
+    "id": "codebase_knowledge_graph_asset",
+    "type": "asset",
+    "name": "codebase_knowledge_graph",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Builds and maintains a knowledge graph of the codebase",
+    "parent_module": "assets_module", 
+    "dependencies": ["code_changes_asset", "impact_assessment_asset", "KnowledgeGraphStore"],
+    "metadata": {
+      "lines_of_code": 88,
+      "compute_kind": "claude_code",
+      "output_type": "Dict[str, Any]"
+    }
+  },
+  {
+    "id": "continuous_analysis_job",
+    "type": "job",
+    "name": "continuous_analysis",
+    "file_path": "codebase_intelligence/jobs/jobs.py",
+    "description": "Continuous analysis pipeline triggered by code changes",
+    "parent_module": "jobs_module",
+    "dependencies": ["code_changes_asset", "impact_assessment_asset", "documentation_updates_asset", "codebase_knowledge_graph_asset"],
+    "metadata": {
+      "job_type": "asset_job",
+      "trigger": "sensor"
+    }
+  },
+  {
+    "id": "quality_audit_job",
+    "type": "job",
+    "name": "quality_audit_job",
+    "file_path": "codebase_intelligence/jobs/jobs.py",
+    "description": "Scheduled code quality audit job",
+    "parent_module": "jobs_module",
+    "dependencies": ["code_quality_audit_asset"],
+    "metadata": {
+      "job_type": "asset_job",
+      "trigger": "schedule"
+    }
+  },
+  {
+    "id": "full_analysis_job",
+    "type": "job",
+    "name": "full_analysis",
+    "file_path": "codebase_intelligence/jobs/jobs.py",
+    "description": "Complete analysis of the codebase",
+    "parent_module": "jobs_module",
+    "dependencies": ["all_assets"],
+    "metadata": {
+      "job_type": "asset_job",
+      "trigger": "manual"
+    }
+  },
+  {
+    "id": "commit_sensor",
+    "type": "sensor",
+    "name": "commit_sensor",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Triggers analysis when new commits are detected",
+    "parent_module": "assets_module",
+    "dependencies": ["git", "continuous_analysis_job"],
+    "metadata": {
+      "sensor_type": "file_watcher",
+      "status": "running"
+    }
+  },
+  {
+    "id": "quality_audit_schedule",
+    "type": "schedule",
+    "name": "weekly_quality_audit",
+    "file_path": "codebase_intelligence/assets/assets.py",
+    "description": "Weekly code quality audit schedule",
+    "parent_module": "assets_module",
+    "dependencies": ["quality_audit_job"],
+    "metadata": {
+      "cron_schedule": "0 0 * * 0",
+      "frequency": "weekly"
+    }
+  }
+]
