@@ -21,7 +21,7 @@ class SystemConfig:
         config = {
             "claude_code": {
                 "api_key": os.getenv("CLAUDE_CODE_API_KEY", ""),
-                "timeout": int(os.getenv("CLAUDE_CODE_TIMEOUT", "300")),
+                "timeout": int(os.getenv("CLAUDE_CODE_TIMEOUT", "600")),
                 "max_retries": int(os.getenv("CLAUDE_CODE_MAX_RETRIES", "3"))
             },
             "repository": {
@@ -41,6 +41,15 @@ class SystemConfig:
                     "smtp_port": int(os.getenv("SMTP_PORT", "587")),
                     "from_email": os.getenv("FROM_EMAIL", "")
                 }
+            },
+            "logging": {
+                "level": os.getenv("LOG_LEVEL", "INFO"),
+                "format": os.getenv("LOG_FORMAT", "%(asctime)s - %(name)s - %(levelname)s - %(message)s"),
+                "file_path": os.getenv("LOG_FILE", "./logs/codebase_intelligence.log"),
+                "max_bytes": int(os.getenv("LOG_MAX_BYTES", "10485760")),  # 10MB
+                "backup_count": int(os.getenv("LOG_BACKUP_COUNT", "5")),
+                "enable_console": os.getenv("LOG_ENABLE_CONSOLE", "true").lower() == "true",
+                "enable_file": os.getenv("LOG_ENABLE_FILE", "true").lower() == "true"
             }
         }
         

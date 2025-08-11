@@ -1,5 +1,5 @@
 claude_code:
-  timeout: 300
+  timeout: 600
   max_retries: 3
 
 repository:
@@ -13,6 +13,18 @@ storage:
   metrics_store: "./data/metrics"
 
 notifications:
+  slack_webhook: ""  # Optional Slack webhook URL
   email_config:
     smtp_host: "smtp.gmail.com"
     smtp_port: 587
+    from_email: ""
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_path: "./logs/codebase_intelligence.log"
+  max_bytes: 10485760  # 10MB
+  backup_count: 5
+  enable_console: true
+  enable_file: true

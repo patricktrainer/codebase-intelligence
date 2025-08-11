@@ -2,7 +2,7 @@
 # Launch the Dagster UI
 
 source venv/bin/activate
-export $(cat .env | xargs)
+export $(grep -v '^#' .env | xargs)
 
 echo "🚀 Launching Dagster UI..."
 echo "📊 Open http://localhost:3000 in your browser"

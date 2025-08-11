@@ -6,8 +6,12 @@ automated code analysis and documentation using Claude Code.
 
 from dagster import Definitions
 
+from codebase_intelligence.logging_config import setup_logging
 from codebase_intelligence.jobs.jobs import continuous_analysis_job, quality_audit_job, full_analysis_job
-from codebase_intelligence.assets.assets import defs 
+from codebase_intelligence.assets.assets import defs
+
+# Initialize centralized logging
+setup_logging() 
 
 
 defs = Definitions(
